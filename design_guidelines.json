@@ -1,0 +1,69 @@
+{
+  "project_name": "Protocole Summer Build",
+  "theme": "dark",
+  "archetype": "2 (Performance Pro) & 5 (Luxury Hybrid)",
+  "colors": {
+    "background": "#0A0A0A",
+    "card": "#141414",
+    "border": "#27272A",
+    "primary": "#CCFF00",
+    "primary_foreground": "#000000",
+    "secondary": "#1F1F22",
+    "secondary_foreground": "#FFFFFF",
+    "muted": "#27272A",
+    "muted_foreground": "#A1A1AA",
+    "accent": "#FF3B30",
+    "text_main": "#F4F4F5",
+    "text_muted": "#A1A1AA",
+    "highlight_bg": "rgba(204, 255, 0, 0.1)"
+  },
+  "typography": {
+    "heading_font": "Oswald, sans-serif",
+    "body_font": "IBM Plex Sans, sans-serif",
+    "rules": [
+      "Headings must use Oswald, uppercase, with tight tracking (tracking-tighter) for large sizes.",
+      "Overlines and small labels must use uppercase, text-xs, tracking-[0.2em], text-muted.",
+      "Body text uses IBM Plex Sans for a technical, precise look.",
+      "Use tabular-nums for clocks, times, and statistics."
+    ]
+  },
+  "layout": {
+    "grid": "Control Room Grid (Dense, gap-4 to gap-6). Base Grid: grid-cols-1 lg:grid-cols-4 or 12.",
+    "surfaces": "Technical Grid Borders: 1px solid borders (border-[#27272A]) on flat dark backgrounds (#141414). No soft shadows. Use sharp radii (rounded-none or max rounded-md).",
+    "spacing": "Generous inner padding for cards (p-6). Tight spacing for data rows."
+  },
+  "motion": {
+    "interactions": "Precise, military feel. Micro-interactions only. framer-motion for smooth entrance.",
+    "checklist": "Checkbox click should have a snappy scale effect. Strikethrough text with an opacity fade on completion.",
+    "completion_reward": "Trigger 'canvas-confetti' (in a neon/metallic color palette like gold, lime, white) when all daily tasks are completed."
+  },
+  "components": {
+    "header_command_center": "Sticky top bar or hero section showing real-time digital clock, current date, and a large progress ring/bar for daily completion %. Include current streak count.",
+    "timeline_checklist": "A vertical list of tasks with their corresponding times. The system must calculate the current time block and apply an 'active' style (border-l-4 border-[#CCFF00] bg-[#CCFF00]/10) to the current task.",
+    "invariant_rules": "A dedicated solid panel listing the inviolable rules (Sommeil, Alimentation, Sport, Cheveux, Posture).",
+    "workout_panel": "A specific widget for 'SÉANCE MAISON (15 MIN - V-SHAPE)' showing the timer details.",
+    "stats_widget": "Widgets for 'Streak Counter' (days) and 'Weekly Success %'."
+  },
+  "image_urls": [
+    {
+      "url": "https://static.prod-images.emergentagent.com/jobs/b743beb1-6172-456d-8a5a-b3a22ce19b13/images/eac8e77e32ba12a2dfc1f05cfd3551de17f747093ecfc2aa15217315abae063b.png",
+      "category": "workout_background",
+      "description": "Athletic silhouette. Use as a subtle background image with low opacity (10-20%) and blend-mode overlay inside the 'Séance Maison' card or the overall Header background."
+    },
+    {
+      "url": "https://static.prod-images.emergentagent.com/jobs/b743beb1-6172-456d-8a5a-b3a22ce19b13/images/f4bf62b4bf19e00f327e74d973f244dca038accd0611a4b3c84d7643841c7186.png",
+      "category": "app_texture",
+      "description": "Matte black abstract geometric background. Use as a full app background with bg-cover, opacity-50, and fixed positioning."
+    }
+  ],
+  "instructions_to_main_agent": [
+    "Initialize React application with Tailwind CSS, Shadcn UI primitives.",
+    "Include dependencies: framer-motion, canvas-confetti, @types/canvas-confetti, date-fns, lucide-react.",
+    "Google Fonts: Import 'Oswald' and 'IBM Plex Sans' in index.html or global CSS.",
+    "Data Layer: Implement a custom hook 'useProtocolStore' utilizing localStorage. It must track the checklist state, daily progress, last reset date, streak, and weekly history.",
+    "Logic - Midnight Reset: Check current date vs last reset date on app load. If different, reset checklist checkboxes and update streak (increment if 100% completed previous day, reset to 0 if not).",
+    "Logic - Real-time Highlighter: Use a useEffect running every minute to determine which checklist item should be active based on its scheduled time vs current system time.",
+    "Checklist Data: 09:30 Réveil & Douche, 09:40 Crème, 09:45 10 reps sourire, 10:00 Petit-déj, 14:00 Bronzage, 18:00 Système Physique, 00:30 Extinction lumière.",
+    "Testing: Add data-testid to every checkbox, button, and dynamic text element."
+  ]
+}
