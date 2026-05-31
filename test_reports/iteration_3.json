@@ -1,0 +1,26 @@
+{
+  "summary": "Iteration 3 frontend testing complete — z-index bug fix verified, redesigned Agenda + TodayMission + audio cues all working. 38/38 Playwright assertions passed across two runs.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "WorkoutSession.jsx: createPortal to document.body correctly escapes the stacking context of the main container (which has transforms/blur backdrops). Verified via elementFromPoint at viewport center after window.scrollTo(0,3000) — top element is inside the modal.",
+    "Body scroll lock implementation saves the previous overflow value and restores on cleanup — good. Restored to '' after close which is the original default.",
+    "Audio: playBeep uses a singleton AudioContext cached on window.__protocoleAudio. Note that some browsers block autoplay until user gesture — fine since user clicks 'launch-session-btn' before any beep.",
+    "Agenda chain rule (computeMaisonDays) verified: Mon CrossFit alone → Maison Tue; Mon+Tue CrossFit → Maison shifts to Wed; remove Tue → Maison returns to Tue. localStorage persistence works after reload.",
+    "Mission detail unchanged ('JOUR DE REPOS') after adding Mon/Tue CrossFit because today is Sunday (dim) in the test run — correct behavior; today=Sun has no sessions so mission stays REPOS. Consider adding 'mission' that reflects upcoming sessions for empty-today days as a future enhancement, but not a bug.",
+    "Mute button toggles between Volume2 and VolumeX icons without console errors. data-testid='session-mute-btn' present and accessible."
+  ],
+  "updated_files": [],
+  "success_rate": {"frontend": "100%"},
+  "seed_data_creation": "localStorage cleared at the start of test run; agenda populated through quick-add UI then cleared.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All iteration-3 features verified: (1) createPortal z-index fix — agenda no longer overlays modal when scrolling, (2) body scroll lock + Escape close, (3) session-mute-btn icon toggle, (4) TodayMission renders with mission-label/mission-detail/week dots, (5) Agenda quick-add (add-day-N, add-time-HH:MM, agenda-add-btn) creates crossfit-block-{day}-{slot} and triggers maison-block computation, (6) chain rule (Mon+Tue→Maison Wed), (7) localStorage persistence on 'protocole-summer-build:agenda:v1', (8) agenda-clear-btn, (9) click crossfit-block removes session, (10) all previously-passing testids still present (dashboard-root, command-header, header-clock, progress-ring, daily-checklist, invariant-rules, stats-panel, workout-panel, footer, agenda-panel), (11) workout focus flow (launch → modal → chrono counts up → done advances → close/escape closes). Slot numbering: 17:00 → slot 22, 18:00 → slot 24. Test run done on Sun 31 May 2026 (today=6).",
+  "rca of the issue": "Z-index bug: original modal lived inside the dashboard-root container which had transform/filter/will-change CSS creating a new stacking context, so fixed-position descendants were constrained relative to the parent and got overlapped by later page content on scroll. Fix: render via createPortal(document.body) so the modal escapes any ancestor stacking context, combined with `fixed inset-0 z-[100]` and body overflow-hidden. Verified — element at viewport center after scrolling is inside workout-session-modal."
+}

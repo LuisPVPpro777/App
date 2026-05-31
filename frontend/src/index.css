@@ -196,3 +196,145 @@ body::before {
 .blink {
     animation: blink 1.4s infinite;
 }
+
+/* =========================================
+   LIGHT THEME (auto 09:40 → 18:00)
+   ========================================= */
+html.theme-light body {
+    background-color: #f7f5f0;
+    color: #0a0a0a;
+    background-image:
+        radial-gradient(
+            ellipse at top right,
+            rgba(204, 255, 0, 0.18),
+            transparent 50%
+        ),
+        radial-gradient(
+            ellipse at bottom left,
+            rgba(255, 59, 48, 0.04),
+            transparent 50%
+        );
+}
+html.theme-light body::before {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+}
+
+html.theme-light .surface {
+    background-color: #ffffff;
+    border-color: #e4e2dc;
+}
+html.theme-light .surface-corner::before,
+html.theme-light .surface-corner::after {
+    border-color: #18181b;
+}
+
+/* Text colors */
+html.theme-light .text-white,
+html.theme-light .text-zinc-100,
+html.theme-light .text-zinc-200 {
+    color: #0a0a0a;
+}
+html.theme-light .text-zinc-300 {
+    color: #27272a;
+}
+html.theme-light .text-zinc-400 {
+    color: #52525b;
+}
+html.theme-light .text-zinc-500 {
+    color: #71717a;
+}
+html.theme-light .text-zinc-600 {
+    color: #a1a1aa;
+}
+html.theme-light .text-zinc-700 {
+    color: #d4d4d8;
+}
+html.theme-light .overline {
+    color: #71717a;
+}
+
+/* Borders */
+html.theme-light .border-\[\#27272a\],
+html.theme-light .border-\[\#1f1f22\] {
+    border-color: #e4e2dc;
+}
+html.theme-light .divide-\[\#1f1f22\] > * + * {
+    border-color: #e4e2dc;
+}
+html.theme-light .bg-\[\#0d0d10\] {
+    background-color: #f1efe9;
+}
+html.theme-light .bg-\[\#0a0a0c\] {
+    background-color: #f7f5f0;
+}
+html.theme-light .bg-\[\#1f1f22\] {
+    background-color: #e4e2dc;
+}
+html.theme-light .hover\:bg-\[\#141417\]:hover {
+    background-color: #f7f5f0;
+}
+html.theme-light .hover\:bg-\[\#1a1a1d\]:hover {
+    background-color: #efeee8;
+}
+
+/* progress ring track + svg circles */
+html.theme-light svg circle[stroke="#27272a"] {
+    stroke: #e4e2dc;
+}
+
+/* stat bars background fallback */
+html.theme-light .bg-zinc-600 {
+    background-color: #71717a;
+}
+html.theme-light .bg-zinc-200 {
+    background-color: #18181b;
+}
+
+/* Active task volt bg adjustment */
+html.theme-light .bg-\[rgba\(204\,255\,0\,0\.06\)\] {
+    background-color: rgba(204, 255, 0, 0.28);
+}
+html.theme-light .bg-\[rgba\(204\,255\,0\,0\.08\)\] {
+    background-color: rgba(204, 255, 0, 0.32);
+}
+html.theme-light .bg-\[rgba\(204\,255\,0\,0\.03\)\] {
+    background-color: rgba(204, 255, 0, 0.12);
+}
+html.theme-light .hover\:bg-\[rgba\(204\,255\,0\,0\.12\)\]:hover {
+    background-color: rgba(204, 255, 0, 0.4);
+}
+
+/* Checkbox border in light */
+html.theme-light .border-\[\#3f3f46\] {
+    border-color: #a1a1aa;
+}
+
+/* Workout overlay background stays dark (it's a focus mode) */
+html.theme-light [data-testid="workout-session-modal"] {
+    color: #f4f4f5;
+}
+html.theme-light [data-testid="workout-session-modal"] .text-white {
+    color: #ffffff;
+}
+html.theme-light [data-testid="workout-session-modal"] .text-zinc-200 {
+    color: #e4e4e7;
+}
+html.theme-light [data-testid="workout-session-modal"] .text-zinc-300,
+html.theme-light [data-testid="workout-session-modal"] .text-zinc-400,
+html.theme-light [data-testid="workout-session-modal"] .text-zinc-500 {
+    color: #a1a1aa;
+}
+
+/* Gym alert stays dramatic regardless of theme */
+html.theme-light [data-testid="gym-alert"] {
+    color: #f4f4f5;
+}
+html.theme-light [data-testid="gym-alert"] .text-white {
+    color: #ffffff;
+}
+html.theme-light [data-testid="gym-alert"] .text-zinc-300 {
+    color: #d4d4d8;
+}
+

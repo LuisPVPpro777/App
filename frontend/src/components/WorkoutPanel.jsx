@@ -1,43 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { HOME_WORKOUT } from "@/lib/protocolData";
-import { Dumbbell, Play, Pause, RotateCcw } from "lucide-react";
-
-const TOTAL_SECONDS = 15 * 60;
-
-const fmt = (s) => {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
-};
+import { Dumbbell, Play, Sparkles } from "lucide-react";
+import WorkoutSession from "@/components/WorkoutSession";
 
 export const WorkoutPanel = () => {
-  const [secondsLeft, setSecondsLeft] = useState(TOTAL_SECONDS);
-  const [running, setRunning] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (!running) return;
-    ref.current = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s <= 1) {
-          clearInterval(ref.current);
-          setRunning(false);
-          return 0;
-        }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(ref.current);
-  }, [running]);
-
-  const pct = 1 - secondsLeft / TOTAL_SECONDS;
+  const [sessionOpen, setSessionOpen] = useState(false);
 
   return (
     <section
       className="surface surface-corner relative overflow-hidden"
       data-testid="workout-panel"
     >
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+      <div
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
         style={{
           backgroundImage:
             "url('https://static.prod-images.emergentagent.com/jobs/b743beb1-6172-456d-8a5a-b3a22ce19b13/images/eac8e77e32ba12a2dfc1f05cfd3551de17f747093ecfc2aa15217315abae063b.png')",
@@ -61,48 +36,6 @@ export const WorkoutPanel = () => {
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="overline">TIMER</div>
-            <div
-              className="font-display tabular text-4xl sm:text-5xl leading-none tracking-tighter mt-1 text-white"
-              data-testid="workout-timer"
-            >
-              {fmt(secondsLeft)}
-            </div>
-          </div>
-        </div>
-
-        {/* progress bar */}
-        <div className="mx-6 mt-5 h-[3px] bg-[#27272a]">
-          <div
-            className="h-full bg-[#CCFF00] transition-all"
-            style={{ width: `${pct * 100}%` }}
-          />
-        </div>
-
-        {/* controls */}
-        <div className="px-6 mt-4 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setRunning((r) => !r)}
-            data-testid="workout-start-pause-btn"
-            className="flex items-center gap-2 px-4 py-2 bg-[#CCFF00] text-black font-display uppercase tracking-wider text-sm hover:bg-white transition-colors"
-          >
-            {running ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            {running ? "Pause" : secondsLeft === TOTAL_SECONDS ? "Démarrer" : "Reprendre"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setRunning(false);
-              setSecondsLeft(TOTAL_SECONDS);
-            }}
-            data-testid="workout-reset-btn"
-            className="flex items-center gap-2 px-4 py-2 border border-[#27272a] hover:border-zinc-500 text-zinc-300 font-display uppercase tracking-wider text-sm transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-            Reset
-          </button>
         </div>
 
         {/* blocks */}
@@ -128,7 +61,31 @@ export const WorkoutPanel = () => {
             </li>
           ))}
         </ol>
+
+        {/* launch focus mode */}
+        <div className="px-6 py-6 border-t border-[#1f1f22]">
+          <button
+            type="button"
+            onClick={() => setSessionOpen(true)}
+            data-testid="launch-session-btn"
+            className="group w-full flex items-center justify-between gap-4 px-5 py-4 bg-[#CCFF00] hover:bg-white text-black font-display uppercase tracking-wider transition-colors"
+          >
+            <span className="flex items-center gap-3">
+              <Play className="w-5 h-5" />
+              <span className="text-lg">Démarrer la séance</span>
+            </span>
+            <span className="hidden sm:flex items-center gap-1.5 text-xs tracking-[0.25em] opacity-70 group-hover:opacity-100">
+              <Sparkles className="w-3.5 h-3.5" />
+              FOCUS MODE
+            </span>
+          </button>
+          <p className="mt-2 text-[11px] text-zinc-500 tracking-wide">
+            Plein écran · chrono ascendant · tuto images · alerte rouge si dépassement.
+          </p>
+        </div>
       </div>
+
+      <WorkoutSession open={sessionOpen} onClose={() => setSessionOpen(false)} />
     </section>
   );
 };
