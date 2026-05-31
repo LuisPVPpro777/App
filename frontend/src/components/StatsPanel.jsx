@@ -86,7 +86,8 @@ export const StatsPanel = ({ streak, bestStreak, completion, weeklyAvg, last7 })
         <div className="overline mb-3">DERNIERS 7 JOURS</div>
         <div className="flex items-end gap-2 h-28" data-testid="week-bars">
           {last7.map((d) => {
-            const h = Math.max(d.value * 100, 3);
+            const h = d.value > 0 ? Math.max(d.value * 100, 6) : 100;
+            const isEmpty = d.value === 0;
             return (
               <div
                 key={d.date}
@@ -96,13 +97,13 @@ export const StatsPanel = ({ streak, bestStreak, completion, weeklyAvg, last7 })
                 <div className="w-full h-full flex items-end">
                   <div
                     className={`w-full transition-all ${
-                      d.isToday
+                      isEmpty
+                        ? "border border-dashed border-[#27272a]"
+                        : d.isToday
                         ? "bg-[#CCFF00]"
                         : d.value === 1
                         ? "bg-zinc-200"
-                        : d.value > 0
-                        ? "bg-zinc-600"
-                        : "bg-[#1f1f22]"
+                        : "bg-zinc-600"
                     }`}
                     style={{ height: `${h}%` }}
                   />
