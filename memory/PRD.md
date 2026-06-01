@@ -1,55 +1,67 @@
 # Protocole Summer Build — PRD
 
 ## Original Problem Statement
-User requested a personal website to clearly and cleanly display his daily objectives ("Protocole Summer Build"), with small checklist animations that reset every day, organized in categories. Includes inviolable rules (sleep, nutrition, sport chain, hair, posture), a 15-min home workout (V-Shape), and a timed daily checklist (09:30 wakeup → 00:30 lights-out).
+Personal website to display daily objectives ("Protocole Summer Build"), with checklist animations that reset daily, organized in categories. Includes inviolable rules, V-Shape home workout, time-based daily checklist, weekly agenda, and cross-device sync.
 
-## User Choices
-- Storage: **Local (localStorage only)** — no backend, no login
-- Tracking: **History + statistics** (streak, weekly %)
-- Design: Agent's choice — chose Performance Pro + Luxury (dark, Volt Yellow #CCFF00, Oswald + IBM Plex Sans)
-- Visual time-based notifications: **Yes** (active task highlighted in real time)
-- Auth: **None** (personal site)
+## User Choices (cumulative)
+- **Storage**: started localStorage-only → upgraded to **MongoDB cloud sync** (singleton singletons via `/api/sync/{protocol|agenda}`)
+- **Auth**: None (personal preview URL)
+- **Style**: Performance Pro + Luxury — dark + Volt Yellow #CCFF00 + Oswald/IBM Plex/JetBrains Mono
+- **Auto theme**: Light 09:40→18:00, dark otherwise
 
 ## Architecture
-- Pure frontend (React 19, Tailwind, Shadcn UI primitives present but using custom surfaces)
-- State: custom hook `useProtocolStore` backed by `localStorage` key `protocole-summer-build:v1`
-- Real-time clock + active-task computation (`computeActiveTaskId`)
-- Midnight reset on app load: archives previous day to history, increments/zeroes streak
-- Celebration: `canvas-confetti` + `sonner` toast at 100% completion
-- Backend (FastAPI) untouched — not needed for this app
+- React 19 + Tailwind + Shadcn primitives, all client routes under `/`
+- FastAPI backend with MongoDB (`sync_state` collection, `_id` ∈ {"protocol","agenda"})
+- Cross-device sync: debounced PUT (350ms) + GET poll every 5s; `skipNextSave` ref prevents feedback loops
+- Modals (WorkoutSession, GymAlert, ShareWeekModal) use `createPortal(document.body)` to escape stacking contexts
+- Body scroll-lock + Escape key on every fullscreen modal
 
-## Core Requirements (static)
-- Daily checklist with 7 time-stamped tasks (categorized by part of day)
-- 5 inviolable rules panel
-- 15-min V-Shape workout panel with countdown timer
-- Stats: current streak, best streak, today %, weekly avg %, last-7-days bar chart
-- Active task auto-highlight based on current system time
-- Midnight reset of checkboxes; streak logic at midnight transition
+## Sections Implemented (chronological)
+### v1 — MVP (2026-05-31)
+- Daily checklist with 7 tasks + active-task highlight + confetti at 100%
+- Invariant rules panel (5 rules)
+- Stats panel (streak/best/today/weekly + last-7-days bars)
+- Workout panel (15-min V-Shape with countdown timer)
+- Auto midnight reset, streak logic
+- Score: 14/14 tests ✅
 
-## What's Been Implemented (2026-05-31)
-- `pages/Dashboard.jsx` — 12-col layout: header + 7-col checklist/rules / 5-col stats/workout
-- `components/CommandHeader.jsx` — live clock (HH:MM:SS), date FR, progress ring, streak & weekly badges
-- `components/DailyChecklist.jsx` — 7 tasks, scaled checkbox animation, active highlight (volt left border + pulse), strikethrough on completion, confetti at 100%, reset button
-- `components/InvariantRules.jsx` — 5 rules with codes 01-05
-- `components/WorkoutPanel.jsx` — countdown timer with Start/Pause/Reset + 3 blocks
-- `components/StatsPanel.jsx` — 4 stat cells + last-7-days bars (dashed border for empty days)
-- `hooks/useProtocolStore.js` — load/save, midnight reset, streak logic, weekly avg
-- `hooks/useNow.js` — ticking clock
-- `lib/protocolData.js` — checklist, rules, workout config, `computeActiveTaskId`
-- Fonts: Oswald + IBM Plex Sans + JetBrains Mono via Google Fonts in `index.html`
-- Tested at 100% via testing_agent_v3 (iteration_1.json)
+### v2 — Light mode + Agenda + Focus Mode + GymAlert (2026-05-31)
+- Auto light theme 09:40→18:00 (`useAutoTheme`)
+- WorkoutSession fullscreen focus modal with ascending chrono, target overshoot (red), rest countdown, tutorial images
+- Agenda grid (7d × 30-min slots), CrossFit click-to-add, Maison auto-computed
+- GymAlert when current time within scheduled CrossFit
+- Score: 14/14 tests ✅
+
+### v3 — Z-index fix + UI polish + 3 features (2026-05-31)
+- WorkoutSession + GymAlert wrapped in createPortal (fix: agenda no longer visible when scrolling behind modal)
+- Body scroll-lock + Escape key
+- Audio beeps (Web Audio API) + mute button in workout session
+- TodayMission card (Crossfit/Maison/Repos status + week dots)
+- Agenda quick-add form (day buttons + time presets + time input)
+- Redesigned CrossFit/Maison blocks with time labels
+- Score: 38/38 tests ✅
+
+### v4 — Cloud sync + Bug fixes + Social share (2026-06-01)
+- BUG FIX: 13:30 block height (`bottom-[-24px]` instead of `-46px`)
+- BUG FIX: Maison cascade for N consecutive CrossFit days (places N Maison sessions on next available days)
+- FEATURE: Cloud sync — singleton endpoints `/api/sync/protocol|agenda` + polling in both `useProtocolStore` and `useAgenda`
+- FEATURE: Sync indicator in footer (online/syncing/offline)
+- FEATURE: ShareWeekModal — 5 palettes (volt/sunset/ocean/mono/sand), html-to-image PNG download 540×675 (4:5 for IG)
+- Score: backend 10/10 + frontend 100% ✅
+
+## Known Minor Items
+- During PNG export, html-to-image emits 4 non-blocking SecurityError warnings reading Google Fonts CSS rules (CORS). PNG still downloads. Could be suppressed via `skipFonts: true` (then text falls back to system fonts) or by self-hosting fonts.
 
 ## Prioritized Backlog
-### P1 (next)
-- Auto-reset when tab stays open across midnight (currently only on reload)
-- Optional notification sound or browser Notification API when a task's time arrives
-- Calendar/history view: clickable past days showing which tasks were done
+### P1
+- Auto-reset (checklist & agenda) when tab stays open across midnight / Monday 00:00
+- PWA installable + browser Notification API for task times
 
 ### P2
-- Customizable checklist (add/edit/remove tasks)
-- Export/import localStorage data (JSON download)
-- PWA / installable on mobile + offline support
-- Optional cloud sync if user later wants multi-device (would require backend + auth)
+- Drag-to-create on agenda grid
+- Monthly calendar view of past 30 days
+- Self-host Oswald/IBM Plex fonts to make PNG exports pixel-perfect across devices
+- Sync conflict UI (show "device X updated 12s ago")
 
 ## Test Credentials
-N/A — no auth, no backend.
+N/A — no auth. State is a singleton on `sync_state` collection.
