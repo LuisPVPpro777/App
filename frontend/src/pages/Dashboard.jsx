@@ -11,42 +11,33 @@ import Agenda from "@/components/Agenda";
 import GymAlert from "@/components/GymAlert";
 import TodayMission from "@/components/TodayMission";
 import ShareWeekModal from "@/components/ShareWeekModal";
-import { Sun, Moon, Cloud, CloudOff, RefreshCw } from "lucide-react";
+import { Sun, Moon, HardDrive } from "lucide-react";
 
-const Footer = ({ theme, syncStatus }) => {
-  const sync = {
-    online: { icon: Cloud, label: "Sync cloud actif", color: "#CCFF00" },
-    syncing: { icon: RefreshCw, label: "Synchronisation…", color: "#F4F4F5" },
-    offline: { icon: CloudOff, label: "Hors-ligne (local)", color: "#FF3B30" },
-    idle: { icon: Cloud, label: "Initialisation…", color: "#71717a" },
-  }[syncStatus] || { icon: Cloud, label: "Cloud", color: "#71717a" };
-  const SyncIcon = sync.icon;
-  return (
-    <footer
-      className="mt-10 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[10px] uppercase tracking-[0.25em] text-zinc-600 px-1"
-      data-testid="footer"
-    >
-      <div>
-        <span className="text-[#CCFF00]">▍</span> PROTOCOLE / CLOUD SYNC ACTIVÉ
-      </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <span
-          className="flex items-center gap-1.5"
-          data-testid="sync-indicator"
-          style={{ color: sync.color }}
-        >
-          <SyncIcon className={`w-3 h-3 ${syncStatus === "syncing" ? "animate-spin" : ""}`} />
-          {sync.label}
-        </span>
-        <span className="w-1 h-1 rounded-full bg-zinc-700" />
-        <span className="flex items-center gap-1.5" data-testid="theme-indicator">
-          {theme === "light" ? <Sun className="w-3 h-3" /> : <Moon className="w-3 h-3" />}
-          Mode {theme === "light" ? "Clair" : "Sombre"} · auto 09:40→18:00
-        </span>
-      </div>
-    </footer>
-  );
-};
+const Footer = ({ theme }) => (
+  <footer
+    className="mt-10 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[10px] uppercase tracking-[0.25em] text-zinc-600 px-1"
+    data-testid="footer"
+  >
+    <div>
+      <span className="text-[#CCFF00]">▍</span> PROTOCOLE / 100% LOCAL · HORS-LIGNE
+    </div>
+    <div className="flex flex-wrap items-center gap-3">
+      <span
+        className="flex items-center gap-1.5"
+        data-testid="storage-indicator"
+        style={{ color: "#CCFF00" }}
+      >
+        <HardDrive className="w-3 h-3" />
+        Stockage local · sans wifi
+      </span>
+      <span className="w-1 h-1 rounded-full bg-zinc-700" />
+      <span className="flex items-center gap-1.5" data-testid="theme-indicator">
+        {theme === "light" ? <Sun className="w-3 h-3" /> : <Moon className="w-3 h-3" />}
+        Mode {theme === "light" ? "Clair" : "Sombre"} · auto 09:40→18:00
+      </span>
+    </div>
+  </footer>
+);
 
 export default function Dashboard() {
   const store = useProtocolStore();
@@ -132,7 +123,7 @@ export default function Dashboard() {
           />
         </div>
 
-        <Footer theme={theme} syncStatus={store.syncStatus} />
+        <Footer theme={theme} />
       </main>
     </>
   );

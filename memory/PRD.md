@@ -41,13 +41,14 @@ Personal website to display daily objectives ("Protocole Summer Build"), with ch
 - Redesigned CrossFit/Maison blocks with time labels
 - Score: 38/38 tests ✅
 
-### v4 — Cloud sync + Bug fixes + Social share (2026-06-01)
-- BUG FIX: 13:30 block height (`bottom-[-24px]` instead of `-46px`)
-- BUG FIX: Maison cascade for N consecutive CrossFit days (places N Maison sessions on next available days)
-- FEATURE: Cloud sync — singleton endpoints `/api/sync/protocol|agenda` + polling in both `useProtocolStore` and `useAgenda`
-- FEATURE: Sync indicator in footer (online/syncing/offline)
-- FEATURE: ShareWeekModal — 5 palettes (volt/sunset/ocean/mono/sand), html-to-image PNG download 540×675 (4:5 for IG)
-- Score: backend 10/10 + frontend 100% ✅
+### v5 — Rollback cloud sync → 100% LOCAL (2026-06-01)
+- USER DECISION: removed all cloud sync per request — wants strict local-per-device with offline support
+- Reverted `useProtocolStore.js` and `useAgenda.js` to localStorage-only (same behavior as v1/v2)
+- Removed `/app/frontend/src/lib/syncApi.js`
+- Footer indicator now shows "Stockage local · sans wifi" (HardDrive icon) instead of cloud sync status
+- Backend `/api/sync/{key}` endpoints remain in server.py but are no longer called (dead code, harmless)
+- Removed @fontsource packages that had been added for prior request (cleanup)
+- Each device keeps its own streak/agenda/checks via `localStorage`
 
 ## Known Minor Items
 - During PNG export, html-to-image emits 4 non-blocking SecurityError warnings reading Google Fonts CSS rules (CORS). PNG still downloads. Could be suppressed via `skipFonts: true` (then text falls back to system fonts) or by self-hosting fonts.
