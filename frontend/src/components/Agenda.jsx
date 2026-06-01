@@ -14,6 +14,7 @@ import {
   Home,
   Plus,
   X as XIcon,
+  Share2,
 } from "lucide-react";
 
 const HOURS = Array.from({ length: 17 }, (_, i) => i + 6); // 06h - 22h
@@ -34,6 +35,7 @@ export const Agenda = ({
   maisonDays,
   toggleSession,
   clearWeek,
+  onShare,
 }) => {
   const todayIdx = dayIndex();
   const monday = mondayOf();
@@ -106,6 +108,19 @@ export const Agenda = ({
         >
           <Trash2 className="w-3.5 h-3.5" />
           Vider la semaine
+        </button>
+      </div>
+
+      {/* Share button */}
+      <div className="px-6 mt-3">
+        <button
+          type="button"
+          onClick={onShare}
+          data-testid="agenda-share-btn"
+          className="inline-flex items-center gap-2 px-3 py-2 border border-[#CCFF00]/30 bg-[rgba(204,255,0,0.05)] hover:bg-[rgba(204,255,0,0.1)] hover:border-[#CCFF00] text-[#CCFF00] text-xs uppercase tracking-widest transition-colors"
+        >
+          <Share2 className="w-3.5 h-3.5" />
+          Exporter pour les réseaux
         </button>
       </div>
 
@@ -296,7 +311,7 @@ export const Agenda = ({
                         )}
                         {startsAtMid && (
                           <div
-                            className="absolute left-0.5 right-0.5 top-1/2 bottom-[-46px] bg-gradient-to-br from-[#CCFF00] to-[#A8D900] flex items-center justify-between px-2 group cursor-pointer z-10"
+                            className="absolute left-0.5 right-0.5 top-1/2 bottom-[-24px] bg-gradient-to-br from-[#CCFF00] to-[#A8D900] flex items-center justify-between px-2 group cursor-pointer z-10"
                             onClick={() => toggleSession(day, slotMid)}
                             data-testid={`crossfit-block-${day}-${slotMid}`}
                           >

@@ -1,0 +1,37 @@
+{
+  "summary": "Iteration 4 — full backend + frontend testing of bug fixes (13:30 block, Maison cascade) and new features (cloud sync /api/sync/{key} + share-week modal with 5 palettes). 10/10 pytest assertions pass for backend sync API; 100% frontend Playwright assertions pass including cross-context (two browser-context) sync round-trip in both directions.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_sync_api.py",
+    "/app/test_reports/pytest/sync_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "BUG FIX VERIFIED — 13:30 block: rendered crossfit-block-0-15 bounding height = 47px ≈ one hour cell (was overshooting to 94px with bottom-[-46px]). Fix in Agenda.jsx (top-1/2 bottom-[-24px] + z-10) is correct.",
+    "BUG FIX VERIFIED — Maison cascade: computeMaisonDays in agendaLogic.js now correctly cascades. Mon+Tue+Wed CrossFit → Maison on Thu, Fri, Sat (verified maison-block-3/4/5 present, maison-block-1/2 absent). Mon alone → Maison Tue. Mon+Wed → Maison Tue+Thu. Algorithm: while target<7 and (crossfitDays[target] || maison[target]) target++; correctly skips both CF days AND already-placed Maison days.",
+    "FEATURE VERIFIED — Cloud sync endpoints: GET /api/sync/{key} returns {data, updated_at}, PUT persists & returns {ok:true, updated_at}, DELETE clears. Validates ALLOWED_KEYS={protocol, agenda} returning 400 for others. Pydantic SyncPayload validates `data` field (422 on missing).",
+    "FEATURE VERIFIED — Cross-context sync round-trip: two independent browser contexts (simulating phone+PC). Tab A toggle wakeup → Tab B receives via 5s poll within 7s (verified via Tab B localStorage AND visual re-render of week dots in Tab A after Tab B added agenda entry).",
+    "FEATURE VERIFIED — Share modal: createPortal mount, 5 palettes (volt, sunset, ocean, mono, sand→TERRA label), card content has LUN-DIM chips, date range, stats (STREAK, AUJOURD'HUI, MOY 7J, VOLUME), #SUMMERBUILD hashtag. Palette switch updates background. PNG download via html-to-image triggers download event with correct filename pattern summer-build-{date}-{palette}.png.",
+    "FEATURE VERIFIED — Sync indicator in footer shows 'SYNC CLOUD ACTIF' when online.",
+    "REGRESSION OK — Daily checklist reset button present, workout focus modal opens via launch-session-btn and closes on Escape.",
+    "MINOR (non-blocking) — During PNG download, html-to-image emits 4 SecurityError console errors when trying to inline cross-origin Google Fonts CSS rules (fonts.googleapis.com CORS does not allow .cssRules read). The PNG is still produced (downloaded successfully); text in the exported image will use the browser's locally-cached/fallback fonts. To suppress these errors, the modal could either (a) pass `skipFonts: true` to toPng options, or (b) embed the fonts as base64 in CSS, or (c) self-host the Oswald/IBM Plex/JetBrains Mono families. Not a blocker because download still completes.",
+    "CODE QUALITY — useProtocolStore.js and useAgenda.js both use the same sync pattern (initial fetch+merge → debounced push 350ms → poll every 5s with skipNextSave guard against feedback loops). Pattern is consistent and avoids infinite loops. Consider extracting into a shared useCloudSync(key, normalize) hook to DRY ~120 lines of duplicated logic — not a bug, just maintainability.",
+    "CODE QUALITY — ShareWeekModal.jsx is 583 lines; nearing the 700 line guideline. ShareCard sub-component could be moved to its own file. Not blocking.",
+    "MongoDB document uses _id='protocol'/'agenda' as the actual document key (intentional singleton). Read response excludes _id properly via projection in the return statement (returns only data and updated_at fields)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_sync_api.py (created — 10 pytest cases)"
+  ],
+  "success_rate": { "backend": "100%", "frontend": "100%" },
+  "test_credentials": "N/A (no auth in this app)",
+  "seed_data_creation": "Tests reset both sync keys (DELETE /api/sync/protocol + agenda) at start, and pytest fixture cleans up after each test. Frontend tests clear localStorage and DELETE both backend keys at start.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 4 iteration-4 deliverables verified: (1) 13:30 block height = 47px (fixed), (2) Maison cascade works for N consecutive CrossFit days (cascades through occupied slots), (3) Cloud sync round-trip works between two independent browser contexts in <7s via 5s polling, (4) Share modal with 5 palettes + PNG download. Backend exposes /api/sync/{protocol|agenda} singleton state. Slot encoding: 17:00→22, 13:30→15, 18:00→24. Today during test run was Mon 01 Jun 2026 (todayIdx=0). The PNG download emits non-blocking CORS console warnings from Google Fonts but file is still produced.",
+  "rca of the issue": "Bug 1 (13:30 block height): the half-hour block used `bottom-[-46px]` which made the block extend ~46px below the cell bottom, doubling its visible height into the next hour cell. Fix: change to `bottom-[-24px]` so the block extends exactly the height of one half-cell (24px) below its starting half-slot, totalling ~48px = 1 hour. Bug 2 (Maison cascade): old computeMaisonDays only placed Maison at day+1 without checking if that day was already a CrossFit OR already-placed Maison day, so consecutive CrossFit days resulted in only one (the last) Maison being placed. Fix: while-loop that increments target past both crossfitDays[target] AND maison[target]."
+}

@@ -49,19 +49,20 @@ export const dayIndex = (d = new Date()) => {
 };
 
 // Compute Maison days from CrossFit days.
-// Rule: Maison happens at 18:00 the day after CrossFit. If 2 consecutive CrossFit days,
-// Maison shifts to the first day without sport.
+// Rule: Maison happens at 18:00 the day after CrossFit.
+// If multiple CrossFit days are consecutive (or Maison slots are already taken),
+// the Maison sessions cascade to the next available days (one Maison per CrossFit).
 export const computeMaisonDays = (crossfitDays) => {
   // crossfitDays: boolean[7]
   const maison = Array(7).fill(false);
   for (let d = 0; d < 7; d++) {
     if (!crossfitDays[d]) continue;
-    // Skip if the next day is also a CrossFit day → defer
+    // Find the next day that is NOT a CrossFit day AND not already a Maison day
     let target = d + 1;
-    while (target < 7 && crossfitDays[target]) {
+    while (target < 7 && (crossfitDays[target] || maison[target])) {
       target += 1;
     }
-    if (target < 7 && !maison[target]) {
+    if (target < 7) {
       maison[target] = true;
     }
   }
